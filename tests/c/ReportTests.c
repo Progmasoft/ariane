@@ -131,6 +131,7 @@ Test(Report, InitLabelKeepsTheSpan)
 
 Test(Report, WritesTheWholeReportInOneCall)
 {
+        static const char sLabel[]    = "not found in this scope";
         static const char sExpected[] = "[E0425] Error: cannot find value `x`\n"
                                         "   ,-[ main.c:3:17 ]\n"
                                         "   |\n"
@@ -156,8 +157,8 @@ Test(Report, WritesTheWholeReportInOneCall)
         cr_assert_eq(Ariane_Report_SetMessage(pReport, "cannot find value `x`", 21U),
                      Ariane_Core_kSuccess);
         cr_assert_eq(Ariane_Report_InitLabel(&label, span), Ariane_Core_kSuccess);
-        label.pMessage      = "not found in this scope";
-        label.messageLength = strlen(label.pMessage);
+        label.pMessage      = sLabel;
+        label.messageLength = sizeof(sLabel) - 1U;
         cr_assert_eq(Ariane_Report_AddLabel(pReport, &label), Ariane_Core_kSuccess);
         cr_assert_eq(Ariane_Report_AddHelp(pReport, "declare `x` first", 17U),
                      Ariane_Core_kSuccess);
