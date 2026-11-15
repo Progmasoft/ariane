@@ -7,7 +7,7 @@
 PROJECT_NAME           = Ariane
 PROJECT_BRIEF          = "The diagnostics of Ariadne through a C API"
 OUTPUT_DIRECTORY       = doxygen
-INPUT                  = README.md CODE_OF_CONDUCT.md include/ariane
+INPUT                  = README.md CODE_OF_CONDUCT.md PATENTS.md include/ariane
 FILE_PATTERNS          = *.h *.md
 USE_MDFILE_AS_MAINPAGE = README.md
 OPTIMIZE_OUTPUT_FOR_C  = YES
