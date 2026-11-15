@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
 # SPDX-License-Identifier: MIT
 #
-# The reference of the C API: doxygen writes build/doxygen/html. Every warning
+# The reference of the C API: doxygen writes doxygen/html. Every warning
 # fails the build, an undocumented declaration included.
 
 PROJECT_NAME           = Ariane
 PROJECT_BRIEF          = "The diagnostics of Ariadne through a C API"
-OUTPUT_DIRECTORY       = build/doxygen
+OUTPUT_DIRECTORY       = doxygen
 INPUT                  = README.md CODE_OF_CONDUCT.md include/ariane
 FILE_PATTERNS          = *.h *.md
 USE_MDFILE_AS_MAINPAGE = README.md
