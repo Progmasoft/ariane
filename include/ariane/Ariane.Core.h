@@ -59,11 +59,16 @@ typedef enum Ariane_Core_ColorKind
 /** @brief A color of a label or of a custom kind of report. */
 typedef struct Ariane_Core_Color
 {
+        /** What the color holds. */
         Ariane_Core_tColorKind kind;
-        uint8_t                fixed;
-        uint8_t                red;
-        uint8_t                green;
-        uint8_t                blue;
+        /** The terminal color, from 0 to 255, when `kind` is Ariane_Core_kFixedColor. */
+        uint8_t fixed;
+        /** The red part when `kind` is Ariane_Core_kRgbColor. */
+        uint8_t red;
+        /** The green part when `kind` is Ariane_Core_kRgbColor. */
+        uint8_t green;
+        /** The blue part when `kind` is Ariane_Core_kRgbColor. */
+        uint8_t blue;
 } Ariane_Core_tColor;
 
 /**

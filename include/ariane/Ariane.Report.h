@@ -58,34 +58,52 @@ typedef enum Ariane_Report_Stream
 /** @brief A range of a source, from `start` up to but not including `end`. */
 typedef struct Ariane_Report_Span
 {
+        /** The identifier Ariane_Sources_Add() gave the source. */
         size_t sourceId;
+        /** The first position of the range. */
         size_t start;
+        /** The position after the last one of the range. */
         size_t end;
 } Ariane_Report_tSpan;
 
 /** @brief A span with what it says about the code there. */
 typedef struct Ariane_Report_Label
 {
+        /** The code the label points at. */
         Ariane_Report_tSpan span;
-        const char*         pMessage;
-        size_t              messageLength;
-        Ariane_Core_tColor  color;
-        int32_t             order;
-        int32_t             priority;
+        /** The message, UTF-8, or `NULL` for a label without one. */
+        const char* pMessage;
+        /** The length of the message in bytes. */
+        size_t messageLength;
+        /** The color of the label. */
+        Ariane_Core_tColor color;
+        /** Labels with a lower order are drawn first. */
+        int32_t order;
+        /** Where labels overlap, the one with the higher priority is shown. */
+        int32_t priority;
 } Ariane_Report_tLabel;
 
 /** @brief How a report is drawn. */
 typedef struct Ariane_Report_Config
 {
-        bool                       crossGap;
+        /** Whether crossing label lines leave a gap instead of a crossing character. */
+        bool crossGap;
+        /** Where an inline label attaches to its span. */
         Ariane_Report_tLabelAttach labelAttach;
-        bool                       compact;
-        bool                       underlines;
-        bool                       multilineArrows;
-        bool                       color;
-        size_t                     tabWidth;
-        Ariane_Report_tCharSet     charSet;
-        Ariane_Report_tIndexType   indexType;
+        /** Whether the report leaves out gaps to use less space. */
+        bool compact;
+        /** Whether spans are underlined where possible. */
+        bool underlines;
+        /** Whether arrows point to the bounds of spans over several lines. */
+        bool multilineArrows;
+        /** Whether the text has terminal colors. */
+        bool color;
+        /** How many columns a tab takes; not 0. */
+        size_t tabWidth;
+        /** The characters that draw boxes and arrows. */
+        Ariane_Report_tCharSet charSet;
+        /** What the positions of spans count. */
+        Ariane_Report_tIndexType indexType;
 } Ariane_Report_tConfig;
 
 /** @brief A diagnostic: a kind, a message, labels, notes and helps. */

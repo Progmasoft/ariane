@@ -118,7 +118,8 @@ each against its SHA-256.
   program can build with `pkg-config --cflags --libs ariane`.
 
 The C tests use [Criterion](https://github.com/Snaipe/Criterion), from the system (`libcriterion-dev` on Debian and
-Ubuntu, `criterion` on Arch and Homebrew).
+Ubuntu, `criterion` on Arch and Homebrew). `doxygen Doxyfile` writes the reference of the C API to `build/doxygen/html`,
+and `tools/coverage.sh` measures what the Rust and the C tests reach (cargo-llvm-cov).
 
 ## License
 
