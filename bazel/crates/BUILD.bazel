@@ -1,0 +1,4 @@
+# SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
+# SPDX-License-Identifier: MIT
+
+exports_files(glob(["*.BUILD.bazel"]))

@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
+# SPDX-License-Identifier: MIT
+
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("@rules_rust//rust:defs.bzl", "rust_shared_library", "rust_static_library", "rust_test")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+SOURCES = glob(["src/**/*.rs"])
+
+DEPENDENCIES = ["@crate_ariadne//:ariadne"]
+
+rust_shared_library(
+    name = "ariane",
+    srcs = SOURCES,
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//visibility:public"],
+    deps = DEPENDENCIES,
+)
+
+rust_static_library(
+    name = "ariane_static",
+    srcs = SOURCES,
+    crate_name = "ariane",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//visibility:public"],
+    deps = DEPENDENCIES,
+)
+
+rust_test(
+    name = "rust_tests",
+    srcs = SOURCES,
+    crate_name = "ariane",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    rustc_env = {"CARGO_PKG_VERSION": "0.1.0"},
+    deps = DEPENDENCIES,
+)
+
+# The C API: the headers with the static library behind them.
+cc_library(
+    name = "ariane_c",
+    hdrs = glob(["include/ariane/*.h"]),
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+    deps = [":ariane_static"],
+)
+
+# Criterion is not in the Bazel Central Registry: the tests link the one the
+# system installed (libcriterion-dev, criterion).
+cc_test(
+    name = "c_tests",
+    srcs = glob(["tests/c/*.c"]),
+    copts = [
+        "-std=c11",
+        "-pedantic-errors",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+    linkopts = ["-lcriterion"],
+    deps = [":ariane_c"],
+)
+
+sh_test(
+    name = "crates_match_cargo_lock",
+    srcs = ["tools/check-crates.sh"],
+    args = [
+        "$(location Cargo.lock)",
+        "$(location MODULE.bazel)",
+    ],
+    data = [
+        "Cargo.lock",
+        "MODULE.bazel",
+    ],
+)

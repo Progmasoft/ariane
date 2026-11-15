@@ -1,0 +1,120 @@
+# SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
+# SPDX-License-Identifier: MIT
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cargo:
+    name: Cargo (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04, windows-2025, macos-15]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # rust-toolchain.toml names the version; rustup installs it on first use.
+      - name: Install the toolchain
+        shell: bash
+        run: rustup show active-toolchain || rustup toolchain install
+
+      - name: Format
+        if: matrix.os == 'ubuntu-26.04'
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Test
+        run: cargo test --locked
+
+  without-cargo:
+    name: ${{ matrix.build }} without Cargo
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [GNU Make, Meson, Bazel]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Criterion
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libcriterion-dev ninja-build
+
+      # Only rustc is installed: a build that reaches for Cargo fails.
+      - name: Install rustc
+        shell: bash
+        run: |
+          rustup toolchain install --profile minimal
+          rm -f "$(rustup which cargo)"
+
+      - name: GNU Make
+        if: matrix.build == 'GNU Make'
+        run: make -j"$(nproc)" test
+
+      - name: Meson
+        if: matrix.build == 'Meson'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/meson"
+          "$RUNNER_TEMP/meson/bin/pip" install meson==1.12.1
+          "$RUNNER_TEMP/meson/bin/meson" setup build/meson
+          "$RUNNER_TEMP/meson/bin/meson" test -C build/meson --print-errorlogs
+
+      - name: Bazel
+        if: matrix.build == 'Bazel'
+        run: bazelisk test //...
+
+  headers:
+    name: Headers
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The profile of Progmasoft Core C Coding Guidelines needs clang-format 23.
+      - name: Format
+        run: |
+          python3 -m venv "$RUNNER_TEMP/format"
+          "$RUNNER_TEMP/format/bin/pip" install clang-format==23.1.5
+          "$RUNNER_TEMP/format/bin/clang-format" --style=file --dry-run --Werror include/ariane/*.h tests/c/*.c
+
+      - name: C11 and C++17
+        run: |
+          echo '#include "ariane/Ariane.Foundation.h"' > "$RUNNER_TEMP/headers.c"
+          cc -std=c11 -pedantic-errors -Wall -Wextra -Werror -Iinclude -fsyntax-only "$RUNNER_TEMP/headers.c"
+          c++ -std=c++17 -Wall -Wextra -Werror -Iinclude -fsyntax-only -x c++ "$RUNNER_TEMP/headers.c"
+
+  required:
+    name: CI Required
+    if: always()
+    needs: [cargo, without-cargo, headers]
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - env:
+          RESULTS: ${{ needs.cargo.result }} ${{ needs.without-cargo.result }} ${{ needs.headers.result }}
+        run: test "$RESULTS" = "success success success"

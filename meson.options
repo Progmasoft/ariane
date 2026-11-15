@@ -1,0 +1,4 @@
+# SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
+# SPDX-License-Identifier: MIT
+
+option('tests', type: 'feature', value: 'auto', description: 'Build the Criterion tests of the C API')

@@ -1,0 +1,7 @@
+# SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
+# SPDX-License-Identifier: MIT
+
+# Cargo and rustc through rustup use this version; Bazel downloads the same one.
+[toolchain]
+channel = "1.99.1"
+components = ["clippy", "rustfmt"]

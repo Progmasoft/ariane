@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 Progmasoft <support@progmasoft.com>
+# SPDX-License-Identifier: MIT
+
+common --enable_bzlmod
+test --test_output=errors
+# Criterion names its shared memory in /dev/shm after the process identifier,
+# which is the same in every sandbox: each test gets a /dev/shm of its own.
+test --sandbox_tmpfs_path=/dev/shm

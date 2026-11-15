@@ -1,0 +1,15 @@
+# Progmasoft Core C Coding Guidelines, Tooling (progmasoft-cpp, 2026-11-15).
+---
+Checks: >-
+  -*,
+  clang-analyzer-core.*,
+  clang-analyzer-deadcode.*,
+  clang-analyzer-unix.Malloc,
+  bugprone-macro-repeated-side-effects,
+  bugprone-sizeof-expression,
+  bugprone-suspicious-memset-usage
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle: file
+SystemHeaders: false
+...

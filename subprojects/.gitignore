@@ -1,0 +1,3 @@
+# Meson downloads the crates of Cargo.lock here.
+*
+!.gitignore
