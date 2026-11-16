@@ -19,8 +19,10 @@ errors and warnings over the source code they are about (here with ASCII boxes a
 ```
 
 The library is written in Rust and built as a shared and a static library with a C API. Its headers are written by
-hand and follow [Progmasoft Core C Coding Guidelines](https://github.com/Progmasoft/progmasoft-cpp). The name is
-the French form of Ariadne.
+hand and follow [Progmasoft Core C Coding Guidelines](https://github.com/Progmasoft/progmasoft-cpp).
+
+The name is the French form of Ariadne, and so also a nod to [`ariadne`](https://crates.io/crates/ariadne), the crate
+Ariane is built on.
 
 Wrappers for other languages build on this C API:
 
