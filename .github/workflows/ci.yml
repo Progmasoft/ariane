@@ -82,6 +82,28 @@ jobs:
           "$RUNNER_TEMP/meson/bin/meson" setup build/meson
           "$RUNNER_TEMP/meson/bin/meson" test -C build/meson --print-errorlogs
 
+      # Pushes to the default branch write to the Progmasoft remote cache and
+      # pull requests only read it; a pull request from a fork gets no secrets
+      # and builds without it.
+      - name: Use the Progmasoft remote cache
+        if: matrix.build == 'Bazel'
+        shell: bash
+        env:
+          WRITES: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch }}
+          CACHE_READ: ${{ secrets.BAZEL_CACHE_READ }}
+          CACHE_WRITE: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch && secrets.BAZEL_CACHE_WRITE || '' }}
+        run: |
+          auth=$([ "$WRITES" = true ] && echo "$CACHE_WRITE" || echo "$CACHE_READ")
+          if [ -z "$auth" ]; then
+            echo "No cache credentials: building without the remote cache."
+            exit 0
+          fi
+          {
+            echo "common --remote_cache=https://remotecache.progmasoft.com"
+            echo "common --remote_header=\"Authorization=Basic $auth\""
+            [ "$WRITES" = true ] || echo "common --remote_upload_local_results=false"
+          } >> "$HOME/.bazelrc"
+
       - name: Bazel
         if: matrix.build == 'Bazel'
         run: bazelisk test //...
