@@ -127,5 +127,6 @@ and `tools/coverage.sh` measures what the Rust and the C tests reach (cargo-llvm
 
 [MIT](LICENSE.txt). The libraries contain Ariadne (MIT), yansi and unicode-width (MIT or Apache-2.0); a binary
 distribution carries their notices.
+Progmasoft's own code is also covered by the [Progmasoft Patent Grant 1.1](PATENTS.md).
 
 Participation follows the [Code of Conduct](CODE_OF_CONDUCT.md).
